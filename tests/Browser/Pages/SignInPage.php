@@ -4,7 +4,7 @@ namespace Tests\Browser\Pages;
 
 use Laravel\Dusk\Browser;
 
-class HomePage extends Page
+class SignInPage extends Page
 {
     /**
      * Get the URL for the page.
@@ -13,7 +13,7 @@ class HomePage extends Page
      */
     public function url()
     {
-        return '/';
+        return '/login';
     }
 
     /**
@@ -24,7 +24,14 @@ class HomePage extends Page
      */
     public function assert(Browser $browser)
     {
-        //
+        $browser->assertPathIs('/login');
+    }
+
+    public function signIn(Browser $browser, $email = null, $password = null)
+    {
+        $browser->type('#email', $email)
+            ->type('#password', $password)
+            ->press('Login');
     }
 
     /**
