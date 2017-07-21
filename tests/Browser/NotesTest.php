@@ -76,4 +76,45 @@ class NotesTest extends DuskTestCase
                 ->assertInputValue('#body', '');
         });
     }
+
+    public function test_note_saved_when_starting_new_note()
+    {
+        $user = factory(User::class)->create();
+        $this->browse(function (Browser $browser) use ($user) {
+            $browser->loginAs($user)
+                ->visit(new NotesPage)
+                ->enterNote('First', 'BodyFirst')
+                ->saveNote()
+                ->pause(DELAY)
+                ->type('#title', 'First update')
+                ->type('#body', 'BodyFirst update')
+                ->clickLink('Create new note')
+                ->pause(DELAY)
+                ->assertSeeIn('.notes', 'First update')
+                ->clickLink('First update')
+                ->pause(DELAY)
+                ->assertInputValue('#title', 'First update')
+                ->assertInputValue('#body', 'BodyFirst update');
+        });
+    }
+
+    public function test_cant_save_not_without_title()
+    {
+        $user = factory(User::class)->create();
+        $this->browse(function (Browser $browser) use ($user) {
+            $browser->loginAs($user)
+                ->visit(new NotesPage)
+                ->saveNote()
+                ->pause(DELAY)
+                ->assertMissing('.alert')
+                ->assertSeeIn('.notes', 'No notes')
+                ->assertDontSeeIn('.notes', 'You have one note')
+                ->assertMissing('.notes ul li:nth-child(2)')
+                ->enterNote('', 'BodyFirst')
+                ->saveNote()
+                ->pause(DELAY)
+                ->assertInputValue('#title', '')
+                ->assertInputValue('#body', 'BodyFirst');
+        });
+    }
 }
