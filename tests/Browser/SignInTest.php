@@ -10,6 +10,7 @@ use Tests\Browser\Pages\SignInPage;
 
 class SignInTest extends DuskTestCase
 {
+    use DatabaseMigrations;
     /**
      * Sign In Test
      *
