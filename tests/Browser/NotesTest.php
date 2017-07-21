@@ -6,6 +6,7 @@ use Tests\DuskTestCase;
 use Laravel\Dusk\Browser;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use App\User;
+use App\Note;
 use Tests\Browser\Pages\SignUpPage;
 use Tests\Browser\Pages\NotesPage;
 
@@ -115,6 +116,26 @@ class NotesTest extends DuskTestCase
                 ->pause(DELAY)
                 ->assertInputValue('#title', '')
                 ->assertInputValue('#body', 'BodyFirst');
+        });
+    }
+
+    public function test_open_existing_note()
+    {
+        $user = factory(User::class)->create();
+
+        $note = factory(Note::class)->create([
+            'user_id' => $user->id
+        ]);
+
+        $this->browse(function (Browser $browser) use ($user, $note) {
+            $browser->loginAs($user)
+                ->visit(new NotesPage)
+                ->pause(DELAY)
+                ->assertSee('You have 1 note')
+                ->clickLink($note->title)
+                ->pause(DELAY)
+                ->assertInputValue('#title', $note->title)
+                ->assertInputValue('#body', $note->body);
         });
     }
 }
